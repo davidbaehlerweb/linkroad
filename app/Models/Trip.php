@@ -19,11 +19,20 @@ class Trip extends Model
         'departure',
         'destination',
         'seats',
+        'available_seats',
         'date',
         'time',
         'price',
         'comments',
+        'status',
     ];
+
+    // Met à jour le statut en fonction du nombre de places disponibles
+    public function updateStatus()
+    {
+        $this->status = $this->available_seats > 0 ? 'Disponible' : 'Complet';
+        $this->save();
+    }
 
     /**
      * Relation avec le modèle User.

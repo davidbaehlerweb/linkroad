@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StripeController;
 use App\Http\Controllers\SwissCityController;
 use App\Http\Controllers\TripController;
 use App\Models\SwissCity;
@@ -34,7 +35,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 use Illuminate\Support\Facades\Log;
 
 Route::get('/swiss-cities', [SwissCityController::class, 'search']);
+Route::get('/trips', [TripController::class, 'search']);
 
+Route::post('/stripe/payment', [StripeController::class, 'processPayment']);
 
 
 

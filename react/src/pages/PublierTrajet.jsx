@@ -11,11 +11,14 @@ const PublierTrajet = () => {
     departure: "",
     destination: "",
     seats: 1,
+    reserved_seats: 0, // Ajout du champ pour les places déjà réservées
+    available_seats: 1, // Calculé automatiquement
     date: "",
     time: "",
     price: "",
     comments: "",
   });
+  
 
   
 
@@ -54,27 +57,48 @@ const PublierTrajet = () => {
   }, []);
 
 
-  const handleChange = async (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
   
+    setFormData((prevData) => {
+      // Conversion des valeurs en entiers
+      const seats = name === "seats" ? parseInt(value, 10) || 0 : parseInt(prevData.seats, 10) || 0;
+      const reservedSeats =
+        name === "reserved_seats" ? parseInt(value, 10) || 0 : parseInt(prevData.reserved_seats, 10) || 0;
+  
+      // Calcul des places disponibles
+      const availableSeats = Math.max(0, seats - reservedSeats);
+  
+      // Ajout des logs pour le débogage
+      console.log("Seats:", seats);
+      console.log("Reserved Seats:", reservedSeats);
+      console.log("Available Seats:", availableSeats);
+  
+      return {
+        ...prevData,
+        [name]: value,
+        available_seats: availableSeats, // Mettre à jour les places disponibles
+      };
+    });
+  
+    // Gestion des suggestions pour "departure" et "destination"
     if (name === "departure" || name === "destination") {
       setSelectedField(name);
       if (value) {
-        try {
-          const response = await axios.get(
-            `http://localhost:8000/api/swiss-cities?search=${value}`
-          );
-          setCitySuggestions(response.data);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des villes :", error.response || error.message);
-          setCitySuggestions([]); // Vide les suggestions en cas d'erreur
-        }
+        axios
+          .get(`http://localhost:8000/api/swiss-cities?search=${value}`)
+          .then((response) => setCitySuggestions(response.data))
+          .catch(() => setCitySuggestions([]));
       } else {
         setCitySuggestions([]);
       }
     }
   };
+  
+  
+  
+  
+  
   
   
 
@@ -96,11 +120,21 @@ const PublierTrajet = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isAuthenticated) {
-      alert("Vous devez être connecté pour publier un trajet.");
+  
+    const seats = parseInt(formData.seats, 10) || 0;
+    const reservedSeats = parseInt(formData.reserved_seats, 10) || 0;
+  
+    // Ajout des logs pour le débogage
+    console.log("Seats (Submit):", seats);
+    console.log("Reserved Seats (Submit):", reservedSeats);
+    console.log("Available Seats (Submit):", formData.available_seats);
+    console.log("Données envoyées :", formData);
+    // Vérification des incohérences
+    if (reservedSeats > seats) {
+      alert("Le nombre de places réservées ne peut pas dépasser le nombre total de places.");
       return;
     }
-
+  
     try {
       const token = localStorage.getItem("token");
       await axios.post("http://localhost:8000/api/trips", formData, {
@@ -113,6 +147,9 @@ const PublierTrajet = () => {
       alert("Une erreur est survenue lors de la publication.");
     }
   };
+  
+  
+  
   
 
   if (loading) {
@@ -226,21 +263,33 @@ const PublierTrajet = () => {
                     )}
                   </div>
                   <div className="relative">
-                    <label
-                      htmlFor="seats"
-                      className="block text-base font-semibold text-white mb-1"
-                    >
-                      Nombre de passagers
+                    <label htmlFor="seats" className="block text-base font-semibold text-white mb-1">
+                      Nombre total de places
                     </label>
                     <input
                       type="number"
                       id="seats"
                       name="seats"
                       min="1"
-                      max="8"
                       value={formData.seats}
                       onChange={handleChange}
-                      className="pl-10 w-full px-3 py-2 border border-white rounded-md focus:ring-purple-300 focus:border-purple-300 bg-purple-800 text-white"
+                      className="w-full px-3 py-2 border border-white rounded-md bg-purple-800 text-white"
+                      required
+                    />
+                  </div>
+                  <div className="relative">
+                    <label htmlFor="reserved_seats" className="block text-base font-semibold text-white mb-1">
+                      Places réservées (conducteur et accompagnants)
+                    </label>
+                    <input
+                      type="number"
+                      id="reserved_seats"
+                      name="reserved_seats"
+                      min="0"
+                      max={formData.seats}
+                      value={formData.reserved_seats}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 border border-white rounded-md bg-purple-800 text-white"
                       required
                     />
                   </div>

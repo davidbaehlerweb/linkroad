@@ -203,6 +203,15 @@ const Register = () => {
             S'inscrire
           </button>
         </form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Déjà inscrit ?{" "}
+          <span
+            onClick={() => navigate("/login")}
+            className="text-violet-500 hover:underline cursor-pointer"
+          >
+            Connectez-vous
+          </span>
+        </p>
       </div>
 
       {/* Modal de succès */}

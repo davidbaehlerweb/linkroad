@@ -1,6 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SwissCityController;
+use App\Http\Controllers\TripController;
+use App\Models\SwissCity;
 
 // Route pour l'inscription
 Route::post('register', [AuthController::class, 'register']);
@@ -18,3 +21,20 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 // Route pour vérifier l'authentification
 Route::get('check-auth', [AuthController::class, 'checkAuth'])->middleware('auth:sanctum');
 Route::get('user', [AuthController::class, 'getUser'])->middleware('auth:sanctum');
+
+
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/trips', [TripController::class, 'store']); // Route pour publier un trajet
+    Route::get('/user', function () {
+        return response()->json(['user' => auth()->user()]);
+    });
+});
+
+use Illuminate\Support\Facades\Log;
+
+Route::get('/swiss-cities', [SwissCityController::class, 'search']);
+
+
+
+

@@ -85,7 +85,17 @@ const Login = () => {
           >
             Se connecter
           </button>
+          
         </form>
+        <p className="mt-4 text-center text-sm text-gray-600">
+          Pas encore inscrit ?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-violet-500 hover:underline cursor-pointer"
+          >
+            Créez un compte ici
+          </span>
+        </p>
       </div>
 
       {isSuccess && (

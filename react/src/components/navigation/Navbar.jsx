@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiSearch, FiPlus } from "react-icons/fi";
 import { HiMenu, HiX } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import logo from "../../assets/logo.png";
 
@@ -70,9 +70,9 @@ const Navbar = () => {
             <FiSearch className="w-5 h-5 mr-2" />
             <span>Rechercher</span>
           </button>
-          <button className="flex items-center text-gray-600 hover:text-violet-500">
+          <button  className="flex items-center text-gray-600 hover:text-violet-500">
             <FiPlus className="w-6 h-6" />
-            <span className="ml-2">Publier un trajet</span>
+            <a href="/publier-trajet"><span className="ml-2">Publier un trajet</span></a>
           </button>
         </div>
 
@@ -99,7 +99,7 @@ const Navbar = () => {
               </button>
               <button className="flex items-center text-gray-600 hover:text-violet-500">
                 <FiPlus className="w-6 h-6" />
-                <span className="ml-2">Publier un trajet</span>
+                <a href="/publier-trajet"><span className="ml-2">Publier un trajet</span></a>
               </button>
             </div>
           </div>
